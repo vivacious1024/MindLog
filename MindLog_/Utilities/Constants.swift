@@ -12,10 +12,35 @@ import SwiftUI
 struct AppConstants {
     
     // MARK: - API 配置
-    
-    /// Gemini API Key（请替换为你自己的 API Key）
-    static let geminiAPIKey = "YOUR_GEMINI_API_KEY_HERE"
-    
+
+    /// Gemini API Key
+    /// 获取方式：https://makersuite.google.com/app/apikey
+    static let geminiAPIKey = "AIzaSyBoFLeSAatQlya0oS_Hq1ABLNrhcrslmUw"
+
+    /// Gemini API 基础 URL
+    static let geminiBaseURL = "https://generativelanguage.googleapis.com/v1beta"
+
+    /// Gemini 模型版本
+    static let geminiModel = "gemini-2.0-flash"
+
+    /// AI 功能配置
+    struct AI {
+        /// 最大图片数量（多模态分析）
+        static let maxImageCount = 3
+
+        /// 图片压缩质量 (0-1)
+        static let imageCompressionQuality: CGFloat = 0.8
+
+        /// 图片最大边长（像素）
+        static let maxImageDimension: CGFloat = 1024
+
+        /// API 请求间隔（秒）- 用于限流
+        static let apiRequestInterval: TimeInterval = 4.0
+
+        /// 聊天历史记录最大条数
+        static let maxChatHistory = 10
+    }
+
     // MARK: - 设计规范
     
     /// 圆角半径

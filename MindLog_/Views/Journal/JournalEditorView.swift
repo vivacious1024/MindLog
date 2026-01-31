@@ -12,22 +12,29 @@ import SwiftData
 struct JournalEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+
     // 编辑模式
     let entry: JournalEntry?
-    
+
     // 表单数据
     @State private var title: String = ""
     @State private var content: String = ""
     @State private var selectedMood: MoodType?
     @State private var selectedWeather: WeatherInfo?
     @State private var selectedExercise: ExerciseRecord?
-    
+
     // Sheet 状态
     @State private var showingMoodPicker = false
     @State private var showingWeatherPicker = false
     @State private var showingExercisePicker = false
-    
+    @State private var showingAIAnalysis = false
+    @State private var showingAIError = false
+
+    // AI 分析状态
+    @State private var isAnalyzing = false
+    @State private var aiAnalysisResult: AIAnalysisResult?
+    @State private var aiErrorMessage: String?
+
     @FocusState private var isContentFocused: Bool
     
     var isEditing: Bool {
@@ -62,7 +69,7 @@ struct JournalEditorView: View {
                             
                             // 元数据标签区域（Liquid Glass 风格）
                             if selectedMood != nil || selectedWeather != nil || selectedExercise != nil {
-                                ScrollView(.horizontal, showsIndicators: false) {
+                                ScrollView(.horizontal) {
                                     HStack(spacing: 12) {
                                         // 心情标签
                                         if let mood = selectedMood {
@@ -105,6 +112,7 @@ struct JournalEditorView: View {
                                     }
                                     .padding(.horizontal, 20)
                                 }
+                                .scrollIndicators(.hidden)
                             }
                             
                             // 内容输入区域（Liquid Glass 卡片）
@@ -138,7 +146,7 @@ struct JournalEditorView: View {
                     
                     // 分隔线
                     Divider()
-                    
+
                     // 底部工具栏（Liquid Glass）
                     HStack(spacing: 0) {
                         // 心情
@@ -150,9 +158,9 @@ struct JournalEditorView: View {
                         ) {
                             showingMoodPicker = true
                         }
-                        
+
                         Spacer()
-                        
+
                         // 天气
                         ToolbarButton(
                             systemIcon: "cloud.sun",
@@ -162,9 +170,9 @@ struct JournalEditorView: View {
                         ) {
                             showingWeatherPicker = true
                         }
-                        
+
                         Spacer()
-                        
+
                         // 运动
                         ToolbarButton(
                             systemIcon: "figure.run",
@@ -174,9 +182,23 @@ struct JournalEditorView: View {
                         ) {
                             showingExercisePicker = true
                         }
-                        
+
                         Spacer()
-                        
+
+                        // AI 分析
+                        ToolbarButton(
+                            systemIcon: "brain.head.profile",
+                            label: "AI",
+                            isActive: isAnalyzing,
+                            activeColor: .purple
+                        ) {
+                            Task {
+                                await analyzeWithAI()
+                            }
+                        }
+
+                        Spacer()
+
                         // 图片（占位）
                         ToolbarButton(
                             systemIcon: "photo",
@@ -186,9 +208,9 @@ struct JournalEditorView: View {
                         ) {
                             // TODO: 图片选择
                         }
-                        
+
                         Spacer()
-                        
+
                         // 音频（占位）
                         ToolbarButton(
                             systemIcon: "waveform",
@@ -201,7 +223,6 @@ struct JournalEditorView: View {
                     }
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(.regularMaterial)
                 }
             }
             .navigationTitle("")
@@ -243,6 +264,18 @@ struct JournalEditorView: View {
             ExercisePickerView(selectedExercise: $selectedExercise)
                 .presentationDetents([.medium, .large])
         }
+        .sheet(isPresented: $showingAIAnalysis) {
+            if let result = aiAnalysisResult {
+                AIAnalysisResultView(result: result) { appliedResult in
+                    applyAIResult(appliedResult)
+                }
+            }
+        }
+        .alert("AI 分析失败", isPresented: $showingAIError, presenting: aiErrorMessage) { _ in
+            Button("确定", role: .cancel) { }
+        } message: { error in
+            Text(error)
+        }
     }
     
     private func loadEntry() {
@@ -258,7 +291,7 @@ struct JournalEditorView: View {
     private func saveEntry() {
         // 确保至少有标题或内容
         let finalTitle = title.isEmpty ? "无标题" : title
-        
+
         if let entry = entry {
             // 编辑现有日记
             entry.title = finalTitle
@@ -278,12 +311,50 @@ struct JournalEditorView: View {
             )
             modelContext.insert(newEntry)
         }
-        
+
         dismiss()
+    }
+
+    // MARK: - AI Analysis
+
+    /// 使用 AI 分析当前内容
+    private func analyzeWithAI() async {
+        guard !content.isEmpty else {
+            return
+        }
+
+        isAnalyzing = true
+
+        do {
+            let service = KimiService()
+            let result = try await service.analyzeContent(text: content, base64Images: nil)
+
+            await MainActor.run {
+                self.aiAnalysisResult = result
+                self.isAnalyzing = false
+                self.showingAIAnalysis = true
+            }
+        } catch {
+            await MainActor.run {
+                self.isAnalyzing = false
+                self.aiErrorMessage = error.localizedDescription
+                self.showingAIError = true
+            }
+        }
+    }
+
+    /// 应用 AI 分析结果到日记
+    private func applyAIResult(_ result: AIAnalysisResult) {
+        // 在保存时应用这些结果
+        // 标签和总结会直接保存到日记
+        // 待办、购物清单、日程会创建为关联对象
+
+        // TODO: 在保存时应用 AI 结果
+        print("Applied AI result: \(result.summary ?? "No summary")")
     }
 }
 
-/// 工具栏按钮组件（纯图标）
+/// 工具栏按钮组件 - Liquid Glass 风格
 struct ToolbarButton: View {
     let systemIcon: String
     let label: String
@@ -291,14 +362,65 @@ struct ToolbarButton: View {
     var activeColor: Color = .blue
     let action: () -> Void
     
+    @State private var isPressed = false
+    
     var body: some View {
         Button(action: action) {
-            Image(systemName: isActive ? systemIcon + ".fill" : systemIcon)
-                .font(.system(size: 26))
-                .foregroundStyle(isActive ? activeColor : Color.secondary)
-                .frame(width: 44, height: 44)
+            VStack(spacing: 4) {
+                // 图标容器 - Liquid Glass 背景
+                ZStack {
+                    // Glass 背景
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                    
+                    // 激活状态的彩色边框
+                    if isActive {
+                        Circle()
+                            .strokeBorder(activeColor.opacity(0.3), lineWidth: 2)
+                    }
+                    
+                    // 激活状态的内发光
+                    if isActive {
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        activeColor.opacity(0.15),
+                                        activeColor.opacity(0.05),
+                                        .clear
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 20
+                                )
+                            )
+                    }
+                    
+                    // 图标
+                    Image(systemName: isActive ? systemIcon + ".fill" : systemIcon)
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(isActive ? activeColor : .secondary)
+                }
+                .frame(width: 50, height: 50)
+            }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(GlassButtonStyle(isPressed: $isPressed))
+    }
+}
+
+/// Liquid Glass 按钮样式 - 弹性按压效果
+struct GlassButtonStyle: ButtonStyle {
+    @Binding var isPressed: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .onChange(of: configuration.isPressed) { oldValue, newValue in
+                isPressed = newValue
+            }
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

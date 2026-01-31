@@ -24,15 +24,24 @@ final class JournalEntry {
     var weather: WeatherInfo?
     var exercise: ExerciseRecord?
     var todos: [TodoItem]?
-    
+
     // AI 生成的数据
     var aiTags: [String]?
     var aiSummary: String?
     var aiLayout: String?  // JSON 格式存储手帐排版
-    
+    var aiSentimentScore: Double?  // 情感评分 (0-1)
+    var isAIAnalyzed: Bool = false  // 是否已进行 AI 分析
+
     // 关系：附件（图片、音频、视频）
     @Relationship(deleteRule: .cascade)
     var attachments: [Attachment]?
+
+    // 关系：AI 提取的数据
+    @Relationship(deleteRule: .cascade)
+    var shoppingList: [ShoppingItem]?
+
+    @Relationship(deleteRule: .cascade)
+    var schedule: [ScheduleItem]?
     
     init(
         id: UUID = UUID(),
@@ -47,7 +56,11 @@ final class JournalEntry {
         aiTags: [String]? = nil,
         aiSummary: String? = nil,
         aiLayout: String? = nil,
-        attachments: [Attachment]? = nil
+        aiSentimentScore: Double? = nil,
+        isAIAnalyzed: Bool = false,
+        attachments: [Attachment]? = nil,
+        shoppingList: [ShoppingItem]? = nil,
+        schedule: [ScheduleItem]? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -61,6 +74,10 @@ final class JournalEntry {
         self.aiTags = aiTags
         self.aiSummary = aiSummary
         self.aiLayout = aiLayout
+        self.aiSentimentScore = aiSentimentScore
+        self.isAIAnalyzed = isAIAnalyzed
         self.attachments = attachments
+        self.shoppingList = shoppingList
+        self.schedule = schedule
     }
 }

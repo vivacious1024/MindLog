@@ -84,23 +84,34 @@ struct ProfileView: View {
                     } label: {
                         Label("账户设置", systemImage: "person.circle")
                     }
-                    
+
                     NavigationLink {
                         Text("隐私设置")
                     } label: {
                         Label("隐私设置", systemImage: "lock.shield")
                     }
-                    
+
                     NavigationLink {
                         Text("通知设置")
                     } label: {
                         Label("通知设置", systemImage: "bell")
                     }
-                    
+
                     NavigationLink {
                         Text("关于 MindLog")
                     } label: {
                         Label("关于", systemImage: "info.circle")
+                    }
+                }
+
+                // 开发者选项
+                Section("开发者选项") {
+                    NavigationLink(destination: AITestView()) {
+                        Label("AI 功能测试", systemImage: "brain.head.profile")
+                    }
+
+                    NavigationLink(destination: AISimpleTestView()) {
+                        Label("AI 简单测试（调试）", systemImage: "ladybug.fill")
                     }
                 }
             }
