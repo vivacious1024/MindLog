@@ -93,8 +93,7 @@ struct JournalDetailView: View {
                         }
                     }
                     .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
                 
                 // 正文内容
@@ -127,8 +126,7 @@ struct JournalDetailView: View {
                         }
                     }
                     .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
                 
                 // AI 标签
@@ -137,7 +135,7 @@ struct JournalDetailView: View {
                         Text("AI 标签")
                             .font(.headline)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
+                        ScrollView(.horizontal) {
                             HStack {
                                 ForEach(tags, id: \.self) { tag in
                                     Text("#\(tag)")
@@ -146,10 +144,11 @@ struct JournalDetailView: View {
                                         .padding(.vertical, 6)
                                         .background(.blue.opacity(0.1))
                                         .foregroundColor(.blue)
-                                        .cornerRadius(16)
+                                        .clipShape(.rect(cornerRadius: 16))
                                 }
                             }
                         }
+                        .scrollIndicators(.hidden)
                     }
                 }
                 
@@ -174,8 +173,7 @@ struct JournalDetailView: View {
                                 }
                             }
                             .padding()
-                            .background(.ultraThinMaterial)
-                            .cornerRadius(8)
+                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
                         }
                     }
                 }

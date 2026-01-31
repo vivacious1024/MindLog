@@ -41,7 +41,7 @@ struct ContentView: View {
                 }
                 .tag(3)
         }
-        .tint(.blue)  // TabView 选中颜色
+        .tint(.blue)
     }
 }
 

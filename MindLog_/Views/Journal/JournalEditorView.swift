@@ -62,7 +62,7 @@ struct JournalEditorView: View {
                             
                             // 元数据标签区域（Liquid Glass 风格）
                             if selectedMood != nil || selectedWeather != nil || selectedExercise != nil {
-                                ScrollView(.horizontal, showsIndicators: false) {
+                                ScrollView(.horizontal) {
                                     HStack(spacing: 12) {
                                         // 心情标签
                                         if let mood = selectedMood {
@@ -105,6 +105,7 @@ struct JournalEditorView: View {
                                     }
                                     .padding(.horizontal, 20)
                                 }
+                                .scrollIndicators(.hidden)
                             }
                             
                             // 内容输入区域（Liquid Glass 卡片）
