@@ -13,6 +13,7 @@ import SwiftData
 /// 应用 Liquid Glass 设计系统
 struct JournalListView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var themeManager: ThemeManager
     @Query(sort: \JournalEntry.createdAt, order: .reverse) private var entries: [JournalEntry]
     
     @State private var showingEditor = false
@@ -20,22 +21,58 @@ struct JournalListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+<<<<<<< Updated upstream
                 // 保持原先的纯白色背景
                 Color(.systemGroupedBackground)
+=======
+                // 背景
+                // 背景
+                themeManager.current.background
+>>>>>>> Stashed changes
                     .ignoresSafeArea()
                 
                 if entries.isEmpty {
                     // 空状态 - Glass 卡片样式
                     emptyStateView
                 } else {
+<<<<<<< Updated upstream
                     // 日记列表 - LazyVStack 性能优化
                     journalListView
+=======
+                    // 日记列表
+                    List {
+                        ForEach(entries) { entry in
+                            NavigationLink {
+                                JournalDetailView(entry: entry)
+                            } label: {
+                                JournalRowView(entry: entry)
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                        }
+                        .onDelete(perform: deleteEntries)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+>>>>>>> Stashed changes
                 }
                 
 
             }
             .navigationTitle("手帐")
+<<<<<<< Updated upstream
             .navigationBarTitleDisplayMode(.large)
+=======
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingEditor = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(themeManager.current.primary)
+                    }
+                }
+            }
+>>>>>>> Stashed changes
             .sheet(isPresented: $showingEditor) {
                 JournalEditorView(entry: nil)
             }

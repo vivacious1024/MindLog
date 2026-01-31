@@ -10,9 +10,11 @@ import SwiftUI
 
 /// 日记行视图组件 - Liquid Glass 风格
 struct JournalRowView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let entry: JournalEntry
     
     var body: some View {
+<<<<<<< Updated upstream
         GlassCard(style: .regular, cornerRadius: AppConstants.CornerRadius.medium) {
             VStack(alignment: .leading, spacing: 12) {
                 // 标题和心情
@@ -27,6 +29,47 @@ struct JournalRowView: View {
                     if let mood = entry.mood {
                         moodBadge(mood)
                     }
+=======
+        VStack(alignment: .leading, spacing: 12) {
+            // 标题和心情
+            HStack {
+                Text(entry.title)
+                    .font(.headline)
+                    .foregroundStyle(themeManager.current.text)
+                
+                Spacer()
+                
+                if let mood = entry.mood {
+                    Text(mood.rawValue)
+                        .font(.title3)
+                        .foregroundStyle(themeManager.current.text)
+                }
+            }
+            
+            // 内容预览
+            if let content = entry.textContent {
+                Text(content)
+                    .font(.subheadline)
+                    .foregroundStyle(themeManager.current.text.opacity(0.8))
+                    .lineLimit(2)
+            }
+            
+            // 底部信息
+            HStack(spacing: 12) {
+                // 日期
+                HStack(spacing: 4) {
+                    Image(systemName: "calendar")
+                    Text(entry.createdAt, format: Date.FormatStyle(date: .abbreviated, time: .shortened))
+                }
+                .font(.caption)
+                .foregroundStyle(themeManager.current.text.opacity(0.6))
+                
+                // 附件数量
+                if let attachments = entry.attachments, !attachments.isEmpty {
+                    Label("\(attachments.count)", systemImage: "paperclip")
+                        .font(.caption)
+                        .foregroundStyle(themeManager.current.text.opacity(0.6))
+>>>>>>> Stashed changes
                 }
                 
                 // 内容预览
@@ -39,6 +82,7 @@ struct JournalRowView: View {
                 
                 // AI 标签（如果有）
                 if let tags = entry.aiTags, !tags.isEmpty {
+<<<<<<< Updated upstream
                     FlowLayout(spacing: 8) {
                         ForEach(tags.prefix(3), id: \.self) { tag in
                             Text(tag)
@@ -52,6 +96,11 @@ struct JournalRowView: View {
                                 )
                         }
                     }
+=======
+                    Label("\(tags.count)", systemImage: "tag")
+                        .font(.caption)
+                        .foregroundStyle(themeManager.current.text.opacity(0.6))
+>>>>>>> Stashed changes
                 }
                 
                 // 底部元数据
@@ -132,6 +181,12 @@ struct JournalRowView: View {
         } else {
             return .red
         }
+<<<<<<< Updated upstream
+=======
+        .padding()
+        .modifier(ThemeCardModifier(themeManager: themeManager))
+        .padding(.vertical, 4) // 卡片间距
+>>>>>>> Stashed changes
     }
 }
 

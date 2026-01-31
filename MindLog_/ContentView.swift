@@ -10,6 +10,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     @State private var selectedTab = 1  // 默认选中手帐
     @State private var showingEditor = false
     @State private var showingJournalCreation = false
@@ -19,7 +20,7 @@ struct ContentView: View {
         ZStack {
             // 主内容区域
             TabView(selection: $selectedTab) {
-                // Tab 0: 社区
+                // Tab 0: 社区 (Theme Store)
                 CommunityFeedView()
                     .tag(0)
                 
@@ -34,16 +35,16 @@ struct ContentView: View {
                     Button(action: { showingProfile = true }) {
                         Image(systemName: "person.fill")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(themeManager.current.primary)
                             .frame(width: 44, height: 44)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(.regularMaterial)
-                                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                                    .fill(themeManager.current.surface)
+                                    .shadow(color: themeManager.current.primary.opacity(0.15), radius: 8, y: 4)
                             )
                     }
                     .buttonStyle(GlassButtonPressStyle())
-                    .padding(.leading,10)
+                    .padding(.leading, 10)
                     .padding(.top, 8)
                     
                     Spacer()
@@ -78,6 +79,7 @@ struct ContentView: View {
 
 /// 自定义底部导航栏 - 统一胶囊容器
 struct CustomTabBar: View {
+    @EnvironmentObject var themeManager: ThemeManager
     @Binding var selectedTab: Int
     let onAddTapped: () -> Void
     
@@ -87,7 +89,7 @@ struct CustomTabBar: View {
             Button(action: { selectedTab = 0 }) {
                 Image(systemName: selectedTab == 0 ? "person.3.fill" : "person.3")
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundStyle(selectedTab == 0 ? .primary : .secondary)
+                    .foregroundStyle(selectedTab == 0 ? themeManager.current.primary : themeManager.current.text.opacity(0.4))
                     .frame(width: 50, height: 44)
             }
             .buttonStyle(TabButtonPressStyle())
@@ -96,7 +98,7 @@ struct CustomTabBar: View {
             Button(action: onAddTapped) {
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 28, weight: .medium))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(themeManager.current.accent)
                     .frame(width: 50, height: 44)
             }
             .buttonStyle(TabButtonPressStyle())
@@ -105,17 +107,17 @@ struct CustomTabBar: View {
             Button(action: { selectedTab = 1 }) {
                 Image(systemName: selectedTab == 1 ? "book.fill" : "book")
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundStyle(selectedTab == 1 ? .primary : .secondary)
+                    .foregroundStyle(selectedTab == 1 ? themeManager.current.primary : themeManager.current.text.opacity(0.4))
                     .frame(width: 50, height: 44)
             }
             .buttonStyle(TabButtonPressStyle())
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
-        .background(.regularMaterial)
+        .background(themeManager.current.surface.opacity(0.95))
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.12), radius: 16, y: -8)
-        .padding(.bottom,-10)
+        .shadow(color: themeManager.current.primary.opacity(0.15), radius: 16, y: -8)
+        .padding(.bottom, -10)
     }
 }
 
@@ -142,4 +144,5 @@ struct GlassButtonPressStyle: ButtonStyle {
 #Preview {
     ContentView()
         .modelContainer(for: JournalEntry.self, inMemory: true)
+        .environmentObject(ThemeManager())
 }

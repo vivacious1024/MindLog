@@ -12,7 +12,12 @@ import SwiftData
 struct JournalEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+<<<<<<< Updated upstream
 
+=======
+    @EnvironmentObject var themeManager: ThemeManager
+    
+>>>>>>> Stashed changes
     // 编辑模式
     let entry: JournalEntry?
 
@@ -47,8 +52,8 @@ struct JournalEditorView: View {
                 // Liquid Glass 背景
                 LinearGradient(
                     colors: [
-                        Color(.systemBackground),
-                        Color(.systemBackground).opacity(0.95)
+                        themeManager.current.background,
+                        themeManager.current.secondary.opacity(0.3)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
