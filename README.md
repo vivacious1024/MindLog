@@ -3,7 +3,7 @@
 > **"记录当下，治愈自我。"**
 > **"Record the moment, Heal yourself."**
 
-![MindLog Banner](https://via.placeholder.com/1200x400/A7F3D0/065F46?text=MindLog+|+Liquid+Glass+Esthetics)
+
 
 ## 🌟 简介 (Introduction)
 
