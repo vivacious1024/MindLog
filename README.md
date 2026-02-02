@@ -58,12 +58,6 @@ MindLog 分为 iOS 客户端和 Web 预览版，采用了最新的技术栈构�
     *   `Vision` (智能抠图)
     *   `Speech` (语音识别)
 
-### 💻 Web Preview
-*   **Framework**: React 18 + Vite
-*   **Language**: TypeScript
-*   **Styling**: Vanilla CSS (CSS Variables for dynamic theming)
-*   **Components**: Custom Glassmorphism components
-
 ---
 
 ## 🚀 快速开始 (Getting Started)
@@ -81,23 +75,6 @@ MindLog 分为 iOS 客户端和 Web 预览版，采用了最新的技术栈构�
     在 Xcode 的 `Signing & Capabilities` 中选择你的开发者账号。
 4.  运行：
     选择模拟器 (iPhone 15 Pro Max 推荐) 并按下 `Cmd + R`。
-
-### Web 预览版环境
-如果你想体验 Web 版的 UI 和主题切换：
-
-1.  进入目录：
-    ```bash
-    cd mindlog-web-preview
-    ```
-2.  安装依赖：
-    ```bash
-    npm install
-    ```
-3.  启动服务：
-    ```bash
-    npm run dev
-    ```
-4.  访问：打开浏览器访问 `http://localhost:5173`。
 
 ---
 
